@@ -222,5 +222,15 @@
         "meeting": "24_PEX_Meeting_BGH_JP",
         "timecode": "[00:56:58]",
         "jiraForm": "dev"
+    },
+    {
+        "id": "21_H_Weekly_catchup_w_TPC_8",
+        "display_id": "8",
+        "action": "Xây dựng quy trình chính thức để cập nhật SLA và các thành phần liên quan khi có thay đổi",
+        "assignee": "PEX",
+        "deadline": "28/7",
+        "meeting": "21_H_Weekly_catchup_w_TPC",
+        "timecode": "[00:43:12], [00:43:40]",
+        "jiraForm": "HienInternal"
     }
 ]
