@@ -674,9 +674,9 @@
 
         function openEdit() {
             if (!activeTask) return;
-            document.getElementById('editAction').value = activeTask.action;
-            document.getElementById('editAssignee').value = activeTask.assignee;
-            document.getElementById('editDeadline').value = activeTask.deadline;
+            document.getElementById('editAction').value = activeTask.action || activeTask.action_item || '';
+            document.getElementById('editAssignee').value = activeTask.assignee || '';
+            document.getElementById('editDeadline').value = activeTask.deadline || '';
             document.getElementById('editOverlay').classList.remove('hidden');
             document.getElementById('editOverlay').classList.add('flex');
         }
@@ -707,7 +707,8 @@
                 return;
             }
             
-            const clipboardText = `Action Item: ${activeTask.action}\nDeadline: ${activeTask.deadline}\nAssignee: ${activeTask.assignee}\nContext: Cuộc họp ${activeTask.meeting} [Timecode: ${activeTask.timecode}]\nRef ID: ${activeTask.id}`;
+            const actionText = activeTask.action || activeTask.action_item || '';
+            const clipboardText = `Action Item: ${actionText}\nDeadline: ${activeTask.deadline}\nAssignee: ${activeTask.assignee}\nContext: Cuộc họp ${activeTask.meeting} [Timecode: ${activeTask.timecode}]\nRef ID: ${activeTask.id}`;
             
             // Use sync execCommand to prevent popup blockers and focus-loss issues
             const textArea = document.createElement("textarea");
@@ -799,7 +800,7 @@
                                  <i data-lucide="link" class="w-3.5 h-3.5 text-blue-500"></i>
                             </div>
                             <span class="text-[10px] font-mono text-slate-400 block mb-1.5">${task.id} • ${task.assignee}</span>
-                            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed pr-6">${task.action}</p>
+                            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed pr-6">${task.action || task.action_item || 'No action specified'}</p>
                             <p class="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-2">D/L: ${task.deadline}</p>
                         </div>
                     `;
@@ -815,7 +816,7 @@
                                  <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
                             </div>
                             <span class="text-[10px] font-mono text-slate-400 block mb-1.5">${task.id} • ${task.assignee}</span>
-                            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed pr-6">${task.action}</p>
+                            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed pr-6">${task.action || task.action_item || 'No action specified'}</p>
                             <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-2">D/L: ${task.deadline}</p>
                         </div>
                     `;
