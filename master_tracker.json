@@ -1,216 +1,226 @@
 [
-  {
-    "id": "ACT-20260723-1",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Make an official request to Jung for additional resources for Tim's AI team and PEX.",
-    "assignee": "PEX Team",
-    "department": "AI Team",
-    "deadline": "TBD",
-    "timecode": "[00:01:00]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-2",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "List down scenarios for PEX's need to borrow resources.",
-    "assignee": "PEX Team",
-    "department": "PEX Team",
-    "deadline": "TBD",
-    "timecode": "[00:02:35]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-3",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Send an email to New (copying PEX and Manang) to agree on the format and production of the short report on the new high-end model's status.",
-    "assignee": "Thomas",
-    "department": "Management / Thomas",
-    "deadline": "TBD",
-    "timecode": "[00:07:53]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-4",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Recognize Alum for his leadership and work on the high-end model.",
-    "assignee": "Thomas / PEX Team",
-    "department": "Management / Thomas",
-    "deadline": "TBD",
-    "timecode": "[00:11:26]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-5",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Raise the need for collaboration on the operation step audit project with Photo PEs and TPCs.",
-    "assignee": "Thomas",
-    "department": "Management / Thomas",
-    "deadline": "Today (July 23rd)",
-    "timecode": "[00:19:00]",
-    "status": "Pending",
-    "tags": []
-  },
-  {
-    "id": "ACT-20260723-6",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Establish timelines for video and 3D product categories for the operation step audit project.",
-    "assignee": "PEX Team",
-    "department": "PEX Team",
-    "deadline": "TBD",
-    "timecode": "[00:22:03]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-7",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Approach Tony and Quynh (Video team) to inform them about the audit project, its timeline, and expected collaboration.",
-    "assignee": "PEX Team",
-    "department": "PEX Team",
-    "deadline": "TBD",
-    "timecode": "[00:23:42]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-8",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Re-evaluate and confirm the timeline for the photo line operation step audit project with all relevant stakeholders (PEX, Product, Production).",
-    "assignee": "PEX Team",
-    "department": "PEX Team",
-    "deadline": "TBD",
-    "timecode": "[00:24:58]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-9",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Reconfirm with Huy Anh on his readiness to work with Dunn on the 2D audit/fixing.",
-    "assignee": "PEX Team",
-    "department": "PEX Team",
-    "deadline": "TBD",
-    "timecode": "[00:27:34]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-10",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Check with Xiang for his opinion on borrowing QS resources for 2D audit/fixing.",
-    "assignee": "PEX Team",
-    "department": "QS / Quality",
-    "deadline": "TBD",
-    "timecode": "[00:28:55]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-11",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Reach out to Anh Tung (QS) again regarding the QS team's active support for 2D handover and daily operations.",
-    "assignee": "PEX Team",
-    "department": "QS / Quality",
-    "deadline": "TBD",
-    "timecode": "[00:31:00]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-12",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Raise the concern about QS team's support and Huy Anh's 2D motivation to Dung.",
-    "assignee": "Thomas",
-    "department": "Management / Thomas",
-    "deadline": "Today (July 23rd)",
-    "timecode": "[00:32:05]",
-    "status": "Pending",
-    "tags": []
-  },
-  {
-    "id": "ACT-20260723-13",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Follow up with Dung regarding QS team's support for 2D.",
-    "assignee": "PEX Team",
-    "department": "QS / Quality",
-    "deadline": "Next catch-up with Dung",
-    "timecode": "[00:32:39]",
-    "status": "Pending",
-    "tags": []
-  },
-  {
-    "id": "ACT-20260723-14",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Update slides and inform the production team about the seasonal change plan after receiving TPC input.",
-    "assignee": "PEX Team",
-    "department": "TPC",
-    "deadline": "After TPC input (expected Thursday)",
-    "timecode": "[00:38:01]",
-    "status": "Pending",
-    "tags": []
-  },
-  {
-    "id": "ACT-20260723-15",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Ask Anh Thang to provide visibility on what parts of the IDP he will cover.",
-    "assignee": "Thomas",
-    "department": "Management / Thomas",
-    "deadline": "TBD",
-    "timecode": "[00:39:48]",
-    "status": "Pending",
-    "tags": [
-      "MISSING_DEADLINE"
-    ]
-  },
-  {
-    "id": "ACT-20260723-16",
-    "meeting": "H_Catchup w TF_Jul23",
-    "date": "2026-07-23",
-    "action_item": "Book quarterly check-ins in August to status the succession and IDP plan.",
-    "assignee": "Thomas",
-    "department": "Management / Thomas",
-    "deadline": "August",
-    "timecode": "[00:41:03]",
-    "status": "Pending",
-    "tags": []
-  }
+    {
+        "id": "ACT-20260723-1",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Make an official request to Jung for additional resources for Tim's AI team and PEX.",
+        "assignee": "PEX Team",
+        "department": "AI Team",
+        "deadline": "TBD",
+        "timecode": "[00:01:00]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-2",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "List down scenarios for PEX's need to borrow resources.",
+        "assignee": "PEX Team",
+        "department": "PEX Team",
+        "deadline": "TBD",
+        "timecode": "[00:02:35]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-3",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Send an email to New (copying PEX and Manang) to agree on the format and production of the short report on the new high-end model's status.",
+        "assignee": "Thomas",
+        "department": "Management / Thomas",
+        "deadline": "TBD",
+        "timecode": "[00:07:53]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-4",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Recognize Alum for his leadership and work on the high-end model.",
+        "assignee": "Thomas / PEX Team",
+        "department": "Management / Thomas",
+        "deadline": "TBD",
+        "timecode": "[00:11:26]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-5",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Raise the need for collaboration on the operation step audit project with Photo PEs and TPCs.",
+        "assignee": "Thomas",
+        "department": "Management / Thomas",
+        "deadline": "Today (July 23rd)",
+        "timecode": "[00:19:00]",
+        "status": "Pending",
+        "tags": []
+    },
+    {
+        "id": "ACT-20260723-6",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Establish timelines for video and 3D product categories for the operation step audit project.",
+        "assignee": "PEX Team",
+        "department": "PEX Team",
+        "deadline": "TBD",
+        "timecode": "[00:22:03]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-7",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Approach Tony and Quynh (Video team) to inform them about the audit project, its timeline, and expected collaboration.",
+        "assignee": "PEX Team",
+        "department": "PEX Team",
+        "deadline": "TBD",
+        "timecode": "[00:23:42]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-8",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Re-evaluate and confirm the timeline for the photo line operation step audit project with all relevant stakeholders (PEX, Product, Production).",
+        "assignee": "PEX Team",
+        "department": "PEX Team",
+        "deadline": "TBD",
+        "timecode": "[00:24:58]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-9",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Reconfirm with Huy Anh on his readiness to work with Dunn on the 2D audit/fixing.",
+        "assignee": "PEX Team",
+        "department": "PEX Team",
+        "deadline": "TBD",
+        "timecode": "[00:27:34]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-10",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Check with Xiang for his opinion on borrowing QS resources for 2D audit/fixing.",
+        "assignee": "PEX Team",
+        "department": "QS / Quality",
+        "deadline": "TBD",
+        "timecode": "[00:28:55]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-11",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Reach out to Anh Tung (QS) again regarding the QS team's active support for 2D handover and daily operations.",
+        "assignee": "PEX Team",
+        "department": "QS / Quality",
+        "deadline": "TBD",
+        "timecode": "[00:31:00]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-12",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Raise the concern about QS team's support and Huy Anh's 2D motivation to Dung.",
+        "assignee": "Thomas",
+        "department": "Management / Thomas",
+        "deadline": "Today (July 23rd)",
+        "timecode": "[00:32:05]",
+        "status": "Pending",
+        "tags": []
+    },
+    {
+        "id": "ACT-20260723-13",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Follow up with Dung regarding QS team's support for 2D.",
+        "assignee": "PEX Team",
+        "department": "QS / Quality",
+        "deadline": "Next catch-up with Dung",
+        "timecode": "[00:32:39]",
+        "status": "Pending",
+        "tags": []
+    },
+    {
+        "id": "ACT-20260723-14",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Update slides and inform the production team about the seasonal change plan after receiving TPC input.",
+        "assignee": "PEX Team",
+        "department": "TPC",
+        "deadline": "After TPC input (expected Thursday)",
+        "timecode": "[00:38:01]",
+        "status": "Pending",
+        "tags": []
+    },
+    {
+        "id": "ACT-20260723-15",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Ask Anh Thang to provide visibility on what parts of the IDP he will cover.",
+        "assignee": "Thomas",
+        "department": "Management / Thomas",
+        "deadline": "TBD",
+        "timecode": "[00:39:48]",
+        "status": "Pending",
+        "tags": [
+            "MISSING_DEADLINE"
+        ]
+    },
+    {
+        "id": "ACT-20260723-16",
+        "meeting": "H_Catchup w TF_Jul23",
+        "date": "2026-07-23",
+        "action_item": "Book quarterly check-ins in August to status the succession and IDP plan.",
+        "assignee": "Thomas",
+        "department": "Management / Thomas",
+        "deadline": "August",
+        "timecode": "[00:41:03]",
+        "status": "Pending",
+        "tags": []
+    },
+    {
+        "id": "24_PEX_Meeting_BGH_JP_1",
+        "display_id": "1",
+        "action": "Cung cấp thông tin liên hệ (số điện thoại, email) của quản lý khối cho phụ huynh",
+        "assignee": "Nhà trường",
+        "deadline": "TBD",
+        "meeting": "24_PEX_Meeting_BGH_JP",
+        "timecode": "[00:56:58]",
+        "jiraForm": "dev"
+    }
 ]
