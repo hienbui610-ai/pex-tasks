@@ -232,5 +232,15 @@
         "meeting": "21_H_Weekly_catchup_w_TPC",
         "timecode": "[00:43:12], [00:43:40]",
         "jiraForm": "HienInternal"
+    },
+    {
+        "id": "21_H_Weekly_catchup_w_TPC_10",
+        "display_id": "10",
+        "action": "Thu thập và tổng hợp phản hồi từ CDI hoặc các nguồn khác để đánh giá hiệu quả của các thay đổi và quyết định tiếp theo",
+        "assignee": "TBD",
+        "deadline": "TBD",
+        "meeting": "21_H_Weekly_catchup_w_TPC",
+        "timecode": "[00:54:57]",
+        "jiraForm": "dev"
     }
 ]
