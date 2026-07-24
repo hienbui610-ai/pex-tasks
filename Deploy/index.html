@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PEX Task Triage - Trạm Duyệt Việc</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom Scrollbar for better UX */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Smooth transitions */
+        .card-hover {
+            transition: all 0.2s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 h-screen flex flex-col overflow-hidden transition-colors duration-300">
+
+    <!-- Header -->
+    <header class="border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shrink-0 relative z-10">
+        <div class="px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 dark:text-white tracking-tight">PEX Triage Board</h1>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 font-medium">Human-in-the-loop Task Control</p>
+                </div>
+            </div>
+            
+            <!-- TABS -->
+            <div class="flex bg-slate-100 dark:bg-slate-950 p-1 rounded-lg border border-slate-200 dark:border-slate-800 shadow-inner">
+                <button id="tabTriage" onclick="switchTab('triage')" class="px-5 py-1.5 text-sm font-semibold rounded-md bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow transition-all flex items-center">
+                    <i data-lucide="filter" class="w-4 h-4 mr-2"></i> Triage Inbox
+                </button>
+                <button id="tabKanban" onclick="switchTab('kanban')" class="px-5 py-1.5 text-sm font-semibold rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all flex items-center">
+                    <i data-lucide="kanban" class="w-4 h-4 mr-2"></i> Team Kanban
+                </button>
+                <button id="tabDashboard" onclick="switchTab('dashboard')" class="px-5 py-1.5 text-sm font-semibold rounded-md text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-all flex items-center">
+                    <i data-lucide="pie-chart" class="w-4 h-4 mr-2"></i> Dashboard
+                </button>
+
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition shadow-sm border border-slate-200 dark:border-slate-700" title="Đổi giao diện">
+                    <i data-lucide="moon" id="themeIcon" class="w-4 h-4"></i>
+                </button>
+                <button onclick="simulateNewMeeting()" class="px-4 py-2 text-xs font-bold rounded-xl bg-slate-900 dark:bg-indigo-600 hover:bg-slate-800 dark:hover:bg-indigo-500 text-white transition flex items-center shadow-md">
+                    <i data-lucide="refresh-cw" class="w-4 h-4 mr-2 text-indigo-400 dark:text-white"></i> Quét & Cập nhật
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 relative overflow-hidden bg-slate-50 dark:bg-slate-950">
+        
+        <!-- ================= TRIAGE VIEW ================= -->
+        <div id="triageView" class="w-full h-full flex absolute inset-0 transition-opacity duration-300">
+            <!-- Column 1: Inbox -->
+            <div class="w-1/3 flex flex-col border-r border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 shrink-0 flex justify-between items-center bg-white/50 dark:bg-transparent">
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center">
+                        <i data-lucide="inbox" class="w-4 h-4 mr-2 text-indigo-500"></i> Hộp chờ duyệt (Inbox)
+                    </h2>
+                    <span id="pendingCount" class="bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-500/30">0</span>
+                </div>
+                <div id="pendingList" class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div class="text-center text-slate-400 text-xs mt-10">
+                        <i data-lucide="check-circle-2" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                        Không có task nào cần duyệt.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Review Panel -->
+            <div class="w-1/3 flex flex-col border-r border-slate-200 dark:border-slate-800 relative bg-white dark:bg-slate-950">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center">
+                        <i data-lucide="search" class="w-4 h-4 mr-2 text-amber-500"></i> Chi tiết & Phân luồng Jira
+                    </h2>
+                </div>
+                
+                <div id="reviewPanel" class="flex-1 p-6 flex flex-col justify-center items-center text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center mb-4">
+                        <i data-lucide="mouse-pointer-click" class="w-8 h-8 text-slate-400"></i>
+                    </div>
+                    <p class="text-sm text-slate-500 font-medium">Chọn một Action Item từ Hộp chờ duyệt<br>để kiểm tra và quyết định.</p>
+                </div>
+
+                <!-- Edit Modal Overlay -->
+                <div id="editOverlay" class="absolute inset-0 bg-white/95 dark:bg-slate-950/95 backdrop-blur-sm z-20 hidden flex-col p-6">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-white mb-4 flex items-center">
+                        <i data-lucide="pencil" class="w-4 h-4 mr-2 text-amber-500"></i> Sửa Thông tin Task
+                    </h3>
+                    <div class="space-y-4 flex-1">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Nội dung Task</label>
+                            <textarea id="editAction" rows="3" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-sm text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Người phụ trách (Assignee)</label>
+                            <input type="text" id="editAssignee" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-sm text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Thời hạn (Deadline)</label>
+                            <input type="text" id="editDeadline" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-2.5 text-sm text-slate-900 dark:text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none transition">
+                        </div>
+                    </div>
+                    <div class="flex space-x-3 mt-4">
+                        <button onclick="saveEdit()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold py-2.5 rounded-xl shadow-md transition">Lưu thay đổi</button>
+                        <button onclick="cancelEdit()" class="px-5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-sm font-bold py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 transition">Hủy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 3: Approved -->
+            <div class="w-1/3 flex flex-col bg-slate-50/50 dark:bg-slate-900/30">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 shrink-0 flex justify-between items-center bg-white/50 dark:bg-transparent">
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center">
+                        <i data-lucide="database" class="w-4 h-4 mr-2 text-emerald-500"></i> Master Tracker
+                    </h2>
+                    <span id="approvedCount" class="bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/30">0</span>
+                </div>
+                <div id="approvedList" class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <div class="text-center text-slate-400 text-xs mt-10">
+                        <i data-lucide="layers" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                        Các task được duyệt sẽ xuất hiện ở đây.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= KANBAN VIEW ================= -->
+        <div id="kanbanView" class="w-full h-full flex flex-col absolute inset-0 opacity-0 pointer-events-none transition-opacity duration-300 bg-slate-100/50 dark:bg-slate-950">
+            <div class="p-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-end shrink-0">
+                <div class="relative w-64">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <i data-lucide="filter" class="w-4 h-4 text-slate-400"></i>
+                    </div>
+                    <input type="text" id="assigneeFilter" onkeyup="renderKanban()" placeholder="Lọc theo tên Assignee..." class="bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-10 p-2 dark:bg-slate-800 dark:border-slate-700 dark:placeholder-slate-400 dark:text-white transition">
+                </div>
+            </div>
+            <div class="flex-1 flex overflow-hidden">
+
+            <!-- TO DO -->
+            <div class="w-1/3 flex flex-col border-r border-slate-200 dark:border-slate-800">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-white/50 dark:bg-slate-900/50">
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center">
+                        <span class="w-2.5 h-2.5 rounded-full bg-slate-400 mr-2 shadow-sm"></span> TO DO
+                    </h2>
+                </div>
+                <div class="flex-1 p-4 space-y-3 overflow-y-auto" id="col-todo" ondrop="drop(event)" ondragover="allowDrop(event)">
+                </div>
+            </div>
+            
+            <!-- IN PROGRESS -->
+            <div class="w-1/3 flex flex-col border-r border-slate-200 dark:border-slate-800">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-white/50 dark:bg-slate-900/50">
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mr-2 shadow-sm shadow-blue-500/50"></span> IN PROGRESS
+                    </h2>
+                </div>
+                <div class="flex-1 p-4 space-y-3 overflow-y-auto" id="col-inprogress" ondrop="drop(event)" ondragover="allowDrop(event)">
+                </div>
+            </div>
+
+            <!-- DONE -->
+            <div class="w-1/3 flex flex-col">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 shrink-0 bg-white/50 dark:bg-slate-900/50">
+                    <h2 class="text-sm font-bold text-slate-800 dark:text-white flex items-center">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2 shadow-sm shadow-emerald-500/50"></span> DONE
+                    </h2>
+                </div>
+                <div class="flex-1 p-4 space-y-3 overflow-y-auto" id="col-done" ondrop="drop(event)" ondragover="allowDrop(event)">
+                </div>
+            </div>
+        </div>
+        </div>
+        </div>
+
+                <!-- ================= DASHBOARD VIEW ================= -->
+        <div id="dashboardView" class="w-full h-full flex flex-col absolute inset-0 opacity-0 pointer-events-none transition-opacity duration-300 bg-slate-50 dark:bg-slate-950 overflow-y-auto p-6">
+            
+            <!-- Dashboard Header & Filters -->
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 space-y-4 md:space-y-0 bg-white dark:bg-slate-900 p-4 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800">
+                <h2 class="text-xl font-bold text-slate-800 dark:text-white flex items-center">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6 mr-2 text-indigo-500"></i> Control Center
+                </h2>
+                
+                <div class="flex space-x-3 w-full md:w-auto">
+                    <div class="relative flex-1 md:w-48">
+                        <select id="dashFilterAssignee" onchange="updateDashboard()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-slate-800 dark:border-slate-700 dark:text-white transition cursor-pointer appearance-none">
+                            <option value="">👤 Lọc Assignee (All)</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-3 text-slate-400 pointer-events-none"></i>
+                    </div>
+                    <div class="relative flex-1 md:w-48">
+                        <select id="dashFilterForm" onchange="updateDashboard()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-slate-800 dark:border-slate-700 dark:text-white transition cursor-pointer appearance-none">
+                            <option value="">📁 Lọc Nhóm (All Jira Forms)</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-3 text-slate-400 pointer-events-none"></i>
+                    </div>
+                    <div class="relative flex-1 md:w-48">
+                        <select id="dashFilterDeadline" onchange="updateDashboard()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5 dark:bg-slate-800 dark:border-slate-700 dark:text-white transition cursor-pointer appearance-none">
+                            <option value="">⏰ Lọc Deadline (All)</option>
+                            <option value="TBD">TBD (Chưa chốt)</option>
+                            <option value="Valid">Có Deadline cụ thể</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-3 text-slate-400 pointer-events-none"></i>
+                    </div>
+                    <button onclick="clearDashboardFilters()" class="p-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition text-slate-600 dark:text-slate-300" title="Xóa bộ lọc">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-4 gap-4 mb-6">
+                <div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tổng Task</p>
+                        <h4 class="text-2xl font-black text-slate-800 dark:text-white" id="kpiTotal">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                        <i data-lucide="layers" class="w-5 h-5 text-slate-500"></i>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">To Do</p>
+                        <h4 class="text-2xl font-black text-slate-600 dark:text-slate-300" id="kpiTodo">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                        <span class="w-3 h-3 rounded-full bg-slate-400"></span>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">In Progress</p>
+                        <h4 class="text-2xl font-black text-blue-600 dark:text-blue-400" id="kpiInprog">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center border border-blue-100 dark:border-blue-500/20">
+                        <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"></span>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Done</p>
+                        <h4 class="text-2xl font-black text-emerald-600 dark:text-emerald-400" id="kpiDone">0</h4>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center border border-emerald-100 dark:border-emerald-500/20">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-3 gap-6 mb-6">
+                <!-- Status Chart -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 flex flex-col items-center">
+                    <h3 class="text-xs font-bold text-slate-600 dark:text-slate-400 mb-4 self-start uppercase tracking-wider">Tỉ lệ hoàn thành</h3>
+                    <div class="relative w-48 h-48">
+                        <canvas id="statusChart"></canvas>
+                    </div>
+                </div>
+                <!-- Assignee Chart -->
+                <div class="col-span-2 bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-5 flex flex-col">
+                    <h3 class="text-xs font-bold text-slate-600 dark:text-slate-400 mb-4 self-start uppercase tracking-wider">Phân bổ theo Assignee</h3>
+                    <div class="relative w-full flex-1 h-48">
+                        <canvas id="assigneeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+                    <h3 class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Danh sách Task Chi tiết</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
+                        <thead class="text-xs text-slate-500 bg-slate-50 dark:bg-slate-800/50 uppercase">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 font-semibold">ID</th>
+                                <th scope="col" class="px-6 py-3 font-semibold w-1/3">Action Item</th>
+                                <th scope="col" class="px-6 py-3 font-semibold">Assignee</th>
+                                <th scope="col" class="px-6 py-3 font-semibold">Deadline</th>
+                                <th scope="col" class="px-6 py-3 font-semibold">Nhóm</th>
+                                <th scope="col" class="px-6 py-3 font-semibold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboardTableBody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Rows go here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <script>
+        // // === INJECT_DATA_START === //
+        let meetingTasks = [
+            {"id": "17_OBD_AXIT_catchup_w_c_Ngoc_1", "display_id": "1", "action": "Kiểm tra lại processing time cho 100 sản phẩm còn lại, đặc biệt là các sản phẩm đã bị gộp/xóa.", "assignee": "Vân, Emma", "deadline": "TBD", "meeting": "17_OBD", "timecode": "[00:05:21]", "jiraForm": "dev"},
+            {"id": "20_H_Weekly_PM_Meeting_7", "display_id": "7", "action": "Pull actual processing time data comparing Autumn/Winter and Spring/Summer.", "assignee": "Hien", "deadline": "TBD", "meeting": "20_H", "timecode": "[00:39:19]", "jiraForm": "dev"},
+            {"id": "20_H_Weekly_PM_Meeting_6", "display_id": "6", "action": "Request detail list of non-IVS clients requiring seasonal change.", "assignee": "Hien", "deadline": "Jul 24", "meeting": "20_H", "timecode": "[00:23:26]", "jiraForm": "TPC & PI"},
+            {"id": "21_H_Weekly_catchup_w_TPC_8", "display_id": "8", "action": "Xây dựng quy trình chính thức để cập nhật SLA.", "assignee": "PEX Team", "deadline": "TBD", "meeting": "21_H", "timecode": "[00:43:12]", "jiraForm": "DEV"}
+        ];
+        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_2", "display_id": "2", "action": "Điều tra nguyên nhân và khắc phục lỗi hệ thống retry khi timeout/upload không thành công (ECU 3)", "assignee": "Khánh", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:19:19]", "jiraForm": "dev"});
+        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_7", "display_id": "7", "action": "Chuẩn hóa quy trình tự động hóa bằng cách tạo khung checklist 5 mục bắt buộc cho tất cả các bước máy (bao gồm retry, limit input)", "assignee": "TBD", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:38:10]", "jiraForm": "qm"});
+        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_6", "display_id": "6", "action": "Xây dựng báo cáo tự động hàng tuần để tự động phát hiện và phân tích các bất thường về request/credit", "assignee": "Khánh, IT team", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:37:04]", "jiraForm": "dev"});
+        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_5", "display_id": "5", "action": "Phát triển logic để thêm tham số giới hạn số lượng file đầu vào tối đa cho mỗi mã trong các bước Vizor X", "assignee": "Khánh, IT team", "deadline": "2-4 tuần", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:36:32]", "jiraForm": "dev"});
+        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_3", "display_id": "3", "action": "Điều tra và khắc phục việc hệ thống Esoft không ghi nhận 3.000+ request từ Vizor (ECU 4)", "assignee": "Khánh, Vizor team", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:22:20]", "jiraForm": "dev"});
+        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_4", "display_id": "4", "action": "Đào tạo lại quy trình \"Select Pick\" và giới hạn số lượng ảnh đầu vào cho người dùng để tránh sao chép toàn bộ order (ECU 1 & 2)", "assignee": "Production team", "deadline": "Ngay lập tức", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:33:36]", "jiraForm": "tpc"});
+        meetingTasks.push({"id": "23_PEX_TRA_OS_Tracks_checkin_7", "display_id": "7", "action": "Đề xuất điều chỉnh deadline nếu cần [00:24:38]", "assignee": "Thịnh", "deadline": "TBD", "meeting": "23_PEX_TRA_OS_Tracks_checkin", "timecode": "[00:24:38]", "jiraForm": "dev"});
+        meetingTasks.push({"id": "23_PEX_TRA_OS_Tracks_checkin_5", "display_id": "5", "action": "Thêm một cột \"Dòng sản phẩm\" (ví dụ: MHS, Tray Channel) vào bảng [00:20:23]", "assignee": "PEX Team", "deadline": "TBD", "meeting": "23_PEX_TRA_OS_Tracks_checkin", "timecode": "[00:20:23]", "jiraForm": "dev"});
+        meetingTasks.push({"id": "23_PEX_TRA_OS_Tracks_checkin_8", "display_id": "8", "action": "Hỏi lại về khả năng copy ảnh gốc vào folder work để thuận tiện cho việc chấm bài [00:24:16]", "assignee": "Chị (người nói)", "deadline": "TBD", "meeting": "23_PEX_TRA_OS_Tracks_checkin", "timecode": "[00:24:16]", "jiraForm": "dev"});
+        // // === INJECT_DATA_END === //
+        
+        const jiraFormLinks = {
+            "dev": "https://ptp.tools.esoft.com/request-hub",
+            "tpc": "https://ptp.tools.esoft.com/request-hub",
+            "qf": "https://ptp.tools.esoft.com/request-hub",
+            "qm": "https://ptp.tools.esoft.com/request-hub",
+            "live": "https://ptp.tools.esoft.com/request-hub",
+            "product": "https://ptp.tools.esoft.com/request-hub",
+            "training": "https://ptp.tools.esoft.com/request-hub",
+            "hieninternal": "https://ptp.tools.esoft.com/request-hub"
+        };
+
+        let pendingQueue = [];
+        let approvedTasks = [];
+        let activeTask = null;
+
+        let statusChartInstance = null;
+        let assigneeChartInstance = null;
+
+                function clearDashboardFilters() {
+            document.getElementById('dashFilterAssignee').value = '';
+            document.getElementById('dashFilterForm').value = '';
+            document.getElementById('dashFilterDeadline').value = '';
+            updateDashboard();
+        }
+
+        function populateDashboardFilters() {
+            const assigneeSelect = document.getElementById('dashFilterAssignee');
+            const formSelect = document.getElementById('dashFilterForm');
+            
+            // Keep current values
+            const currAsg = assigneeSelect.value;
+            const currForm = formSelect.value;
+            
+            const assignees = new Set();
+            const forms = new Set();
+            
+            approvedTasks.forEach(t => {
+                if(t.assignee) assignees.add(t.assignee);
+                if(t.jiraForm) forms.add(t.jiraForm.toUpperCase());
+            });
+
+            assigneeSelect.innerHTML = '<option value="">👤 Lọc Assignee (All)</option>' + Array.from(assignees).sort().map(a => `<option value="${a}">${a}</option>`).join('');
+            formSelect.innerHTML = '<option value="">📁 Lọc Nhóm (All)</option>' + Array.from(forms).sort().map(f => `<option value="${f}">${f}</option>`).join('');
+            
+            assigneeSelect.value = currAsg;
+            formSelect.value = currForm;
+        }
+
+        function updateDashboard() {
+            populateDashboardFilters();
+            
+            const filterAsg = document.getElementById('dashFilterAssignee').value;
+            const filterForm = document.getElementById('dashFilterForm').value;
+            const filterDl = document.getElementById('dashFilterDeadline').value;
+
+            // Apply filters
+            const filteredTasks = approvedTasks.filter(t => {
+                if(filterAsg && t.assignee !== filterAsg) return false;
+                if(filterForm && t.jiraForm && t.jiraForm.toUpperCase() !== filterForm) return false;
+                if(filterDl === 'TBD' && t.deadline !== 'TBD') return false;
+                if(filterDl === 'Valid' && (t.deadline === 'TBD' || !t.deadline)) return false;
+                return true;
+            });
+
+            // 1. KPI Stats
+            const todos = filteredTasks.filter(t => t.kanbanStatus === 'todo' || !t.kanbanStatus).length;
+            const inprog = filteredTasks.filter(t => t.kanbanStatus === 'inprogress').length;
+            const done = filteredTasks.filter(t => t.kanbanStatus === 'done').length;
+
+            document.getElementById('kpiTotal').innerText = filteredTasks.length;
+            document.getElementById('kpiTodo').innerText = todos;
+            document.getElementById('kpiInprog').innerText = inprog;
+            document.getElementById('kpiDone').innerText = done;
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const textColor = isDark ? '#cbd5e1' : '#475569';
+            const gridColor = isDark ? '#334155' : '#f1f5f9';
+
+            // 2. Status Chart
+            const statusCtx = document.getElementById('statusChart');
+            if(statusChartInstance) statusChartInstance.destroy();
+            statusChartInstance = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['To Do', 'In Progress', 'Done'],
+                    datasets: [{
+                        data: [todos, inprog, done],
+                        backgroundColor: ['#94a3b8', '#3b82f6', '#10b981'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    plugins: { legend: { position: 'bottom', labels: { color: textColor, padding: 20, font: {family: 'Inter'} } } },
+                    cutout: '75%',
+                    layout: { padding: 10 }
+                }
+            });
+
+            // 3. Assignee Chart
+            const assigneeCounts = {};
+            filteredTasks.forEach(t => {
+                const asg = t.assignee || 'Trống';
+                assigneeCounts[asg] = (assigneeCounts[asg] || 0) + 1;
+            });
+            
+            const asgCtx = document.getElementById('assigneeChart');
+            if(assigneeChartInstance) assigneeChartInstance.destroy();
+            assigneeChartInstance = new Chart(asgCtx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(assigneeCounts),
+                    datasets: [{
+                        label: 'Tasks',
+                        data: Object.values(assigneeCounts),
+                        backgroundColor: isDark ? '#818cf8' : '#6366f1',
+                        borderRadius: 6,
+                        barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { ticks: { color: textColor, stepSize: 1 }, grid: { color: gridColor, drawBorder: false } },
+                        x: { ticks: { color: textColor }, grid: { display: false, drawBorder: false } }
+                    }
+                }
+            });
+
+            // 4. Data Table
+            const tbody = document.getElementById('dashboardTableBody');
+            tbody.innerHTML = '';
+            
+            if(filteredTasks.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">Không tìm thấy task nào khớp với bộ lọc.</td></tr>`;
+            } else {
+                filteredTasks.forEach(t => {
+                    let statusBadge = '<span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider bg-slate-100 text-slate-500 border border-slate-200">TO DO</span>';
+                    if(t.kanbanStatus === 'inprogress') statusBadge = '<span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider bg-blue-50 text-blue-600 border border-blue-200">IN PROGRESS</span>';
+                    if(t.kanbanStatus === 'done') statusBadge = '<span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wider bg-emerald-50 text-emerald-600 border border-emerald-200">DONE</span>';
+                    
+                    const isTBD = t.deadline === 'TBD' || !t.deadline;
+                    const dlHtml = isTBD ? `<span class="text-rose-500 font-bold text-xs">${t.deadline}</span>` : t.deadline;
+
+                    tbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                            <td class="px-6 py-4 font-mono text-xs text-slate-500 whitespace-nowrap">${t.id}</td>
+                            <td class="px-6 py-4 text-xs font-medium text-slate-800 dark:text-slate-200">${t.action}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center text-xs">
+                                    <div class="w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mr-2 font-bold">${t.assignee ? t.assignee.charAt(0) : '?'}</div>
+                                    ${t.assignee}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-slate-400">${dlHtml}</td>
+                            <td class="px-6 py-4 whitespace-nowrap"><span class="bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-2 py-0.5 rounded text-[10px] font-bold">${t.jiraForm || 'N/A'}</span></td>
+                            <td class="px-6 py-4 whitespace-nowrap">${statusBadge}</td>
+                        </tr>
+                    `;
+                });
+            }
+            if(window.lucide) lucide.createIcons();
+        }
+
+        // ================= THEME =================
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+        
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('themeIcon');
+            if(icon) {
+                icon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+                lucide.createIcons();
+            }
+        }
+
+        // Initialize UI
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            const isDark = savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) document.documentElement.classList.add('dark');
+            updateThemeIcon(isDark);
+            lucide.createIcons();
+        });
+
+        function simulateNewMeeting() {
+            loadState();
+            const processedIds = new Set(approvedTasks.map(t => t.id));
+            pendingQueue = meetingTasks.filter(t => !processedIds.has(t.id));
+            
+            renderPendingList();
+            renderApprovedList();
+            renderKanban();
+            
+            document.getElementById('reviewPanel').innerHTML = `
+                <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center mb-4">
+                    <i data-lucide="inbox" class="w-8 h-8 text-indigo-500 animate-bounce"></i>
+                </div>
+                <p class="text-sm font-bold text-slate-900 dark:text-white">Inbox hiện có ${pendingQueue.length} Action Items</p>
+                <p class="text-xs text-slate-500 mt-2">Vui lòng chọn từng task bên trái để duyệt.</p>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderPendingList() {
+            const listEl = document.getElementById('pendingList');
+            document.getElementById('pendingCount').innerText = pendingQueue.length;
+            
+            if (pendingQueue.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center text-slate-400 text-xs mt-10">
+                        <i data-lucide="check-circle-2" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                        Đã xử lý hết task.
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+
+            listEl.innerHTML = '';
+            pendingQueue.forEach(task => {
+                const isTBD = task.deadline === 'TBD' || !task.deadline;
+                const deadlineClass = isTBD ? 'text-rose-500 bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20';
+                
+                listEl.innerHTML += `
+                    <div onclick="selectTask('${task.id}')" class="card-hover cursor-pointer bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-indigo-400 dark:hover:border-indigo-500 shadow-sm hover:shadow-md">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-mono text-slate-400 dark:text-slate-500">${task.id}</span>
+                            <span class="text-[10px] px-2 py-0.5 rounded border font-bold tracking-wide ${deadlineClass}">${task.deadline}</span>
+                        </div>
+                        <p class="text-xs text-slate-800 dark:text-slate-200 font-semibold line-clamp-2 leading-relaxed">${task.action}</p>
+                        <div class="mt-3 flex items-center text-[10px] font-medium text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50 rounded-lg px-2 py-1 w-fit">
+                            <i data-lucide="user" class="w-3 h-3 mr-1.5"></i> ${task.assignee || 'Trống'}
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function selectTask(id) {
+            activeTask = pendingQueue.find(t => t.id === id);
+            if (!activeTask) return;
+
+            const isTBD = activeTask.deadline === 'TBD' || !activeTask.deadline;
+            const alertHtml = isTBD 
+                ? `<div class="bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-xl p-3 mb-5 flex items-start shadow-sm">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 text-rose-500 mr-2 mt-0.5 shrink-0"></i>
+                    <p class="text-[11px] text-rose-700 dark:text-rose-300 font-medium leading-relaxed">Task này thiếu Deadline (TBD). Bạn nên yêu cầu bổ sung hoặc tự sửa trước khi đưa vào Master Tracker.</p>
+                   </div>` : '';
+
+            // Clean form key for matching
+            let formKey = activeTask.jiraForm ? activeTask.jiraForm.toLowerCase().trim() : "";
+            if(formKey.includes("tpc")) formKey = "tpc";
+            if(formKey.includes("dev")) formKey = "dev";
+
+            document.getElementById('reviewPanel').innerHTML = `
+                <div class="w-full h-full flex flex-col text-left">
+                    <div class="mb-5 flex flex-wrap gap-2">
+                        <span class="text-[10px] font-mono font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 px-2.5 py-1 rounded-lg">${activeTask.id}</span>
+                        <span class="text-[10px] font-medium text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">Nguồn: ${activeTask.meeting} [${activeTask.timecode}]</span>
+                    </div>
+                    
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white mb-5 leading-relaxed">${activeTask.action}</h3>
+                    
+                    ${alertHtml}
+
+                    <div class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-4 space-y-3 mb-6 shadow-inner">
+                        <div class="flex items-center">
+                            <span class="text-xs font-semibold text-slate-500 w-24">Assignee:</span>
+                            <span class="text-xs font-bold text-slate-900 dark:text-slate-200">${activeTask.assignee}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="text-xs font-semibold text-slate-500 w-24">Deadline:</span>
+                            <span class="text-xs font-bold ${isTBD ? 'text-rose-500' : 'text-emerald-500'}">${activeTask.deadline}</span>
+                        </div>
+                        <div class="flex items-center pt-3 border-t border-slate-200 dark:border-slate-700/50 mt-1">
+                            <span class="text-xs font-semibold text-slate-500 w-24 pt-1">Luồng Jira:</span>
+                            <select id="quickJiraForm" onchange="updateQuickJira(this.value)" class="bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg p-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer shadow-sm w-full max-w-[200px]">
+                                <option value="" ${!formKey ? 'selected' : ''}>-- Chọn Hub / Form --</option>
+                                <option value="dev" ${formKey === 'dev' ? 'selected' : ''}>Development Request Form</option>
+                                <option value="tpc" ${formKey === 'tpc' ? 'selected' : ''}>TPC&PI Request Form</option>
+                                <option value="qf" ${formKey === 'qf' ? 'selected' : ''}>Quality Feedback Form</option>
+                                <option value="qm" ${formKey === 'qm' ? 'selected' : ''}>Quality Management Request</option>
+                                <option value="live" ${formKey === 'live' ? 'selected' : ''}>Live Production Support</option>
+                                <option value="product" ${formKey === 'product' ? 'selected' : ''}>Product Change Request</option>
+                                <option value="training" ${formKey === 'training' ? 'selected' : ''}>Training & Test evaluation</option>
+                                <option value="hieninternal" ${formKey === 'hieninternal' ? 'selected' : ''}>Hien Internal Board</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="approveWithJira()" class="flex items-center justify-center p-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-500/20 transition card-hover">
+                                <i data-lucide="external-link" class="w-4 h-4 mr-2"></i>
+                                <span class="text-[11px] font-bold">Copy Info & Tạo Jira</span>
+                            </button>
+                            <button onclick="approveWithoutJira()" class="flex items-center justify-center p-2 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 border border-emerald-200 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400 transition">
+                                <i data-lucide="check-square" class="w-4 h-4 mr-2"></i>
+                                <span class="text-[11px] font-bold">Duyệt nhanh (Local)</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 gap-2">
+                            <button onclick="openEdit()" class="flex items-center justify-center p-2 rounded-xl bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30 text-amber-600 dark:text-amber-400 transition">
+                                <i data-lucide="pencil" class="w-4 h-4 mr-2"></i>
+                                <span class="text-[11px] font-bold">Sửa thông tin Task</span>
+                            </button>
+                            <button onclick="rejectTask()" class="flex items-center justify-center p-2 rounded-xl bg-rose-50 dark:bg-rose-500/10 hover:bg-rose-100 dark:hover:bg-rose-500/20 border border-rose-200 dark:border-rose-500/30 text-rose-600 dark:text-rose-400 transition">
+                                <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i>
+                                <span class="text-[11px] font-bold">Bỏ qua Task này</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function updateQuickJira(val) {
+            if (activeTask) activeTask.jiraForm = val;
+        }
+
+        function openEdit() {
+            if (!activeTask) return;
+            document.getElementById('editAction').value = activeTask.action;
+            document.getElementById('editAssignee').value = activeTask.assignee;
+            document.getElementById('editDeadline').value = activeTask.deadline;
+            document.getElementById('editOverlay').classList.remove('hidden');
+            document.getElementById('editOverlay').classList.add('flex');
+        }
+
+        function cancelEdit() {
+            document.getElementById('editOverlay').classList.add('hidden');
+            document.getElementById('editOverlay').classList.remove('flex');
+        }
+
+        function saveEdit() {
+            activeTask.action = document.getElementById('editAction').value;
+            activeTask.assignee = document.getElementById('editAssignee').value;
+            activeTask.deadline = document.getElementById('editDeadline').value;
+            cancelEdit();
+            selectTask(activeTask.id);
+        }
+
+        function approveWithJira() {
+            if (!activeTask) return;
+            
+            let formKey = activeTask.jiraForm ? activeTask.jiraForm.toLowerCase().trim() : "";
+            if(formKey.includes("tpc")) formKey = "tpc";
+            if(formKey.includes("dev")) formKey = "dev";
+
+            const formLink = jiraFormLinks[formKey];
+            if (!formLink) {
+                alert("⚠️ Vui lòng chọn Hub/Luồng Jira ở Dropdown phía trên trước khi tạo!");
+                return;
+            }
+            
+            const clipboardText = `Action Item: ${activeTask.action}\nDeadline: ${activeTask.deadline}\nAssignee: ${activeTask.assignee}\nContext: Cuộc họp ${activeTask.meeting} [Timecode: ${activeTask.timecode}]\nRef ID: ${activeTask.id}`;
+            
+            // Use sync execCommand to prevent popup blockers and focus-loss issues
+            const textArea = document.createElement("textarea");
+            textArea.value = clipboardText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand("copy");
+            } catch (err) {
+                console.error("Copy failed", err);
+            }
+            document.body.removeChild(textArea);
+            
+            alert("✅ Đã copy thông tin Task. Nhấn OK để mở thẻ Form Jira!");
+            window.open(formLink, "_blank");
+
+            activeTask.hasJira = true;
+            activeTask.kanbanStatus = 'todo';
+            approvedTasks.push({...activeTask});
+            saveState();
+            removeFromPending();
+            renderApprovedList();
+            renderKanban();
+            clearReviewPanel();
+        }
+
+        function approveWithoutJira() {
+            if (!activeTask) return;
+            activeTask.hasJira = false;
+            activeTask.kanbanStatus = 'todo';
+            approvedTasks.push({...activeTask});
+            saveState();
+            removeFromPending();
+            renderApprovedList();
+            renderKanban();
+            clearReviewPanel();
+        }
+
+        function rejectTask() {
+            if (!activeTask) return;
+            activeTask.kanbanStatus = 'rejected';
+            approvedTasks.push({...activeTask});
+            saveState();
+            removeFromPending();
+            clearReviewPanel();
+        }
+
+        function removeFromPending() {
+            pendingQueue = pendingQueue.filter(t => t.id !== activeTask.id);
+            renderPendingList();
+            activeTask = null;
+        }
+
+        function clearReviewPanel() {
+            document.getElementById('reviewPanel').innerHTML = `
+                <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center mb-4">
+                    <i data-lucide="check" class="w-8 h-8 text-emerald-500"></i>
+                </div>
+                <p class="text-sm font-medium text-slate-500">Đã xử lý xong.<br>Chọn task tiếp theo bên trái.</p>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderApprovedList() {
+            const listEl = document.getElementById('approvedList');
+            const visibleTasks = approvedTasks.filter(t => t.kanbanStatus !== 'rejected');
+            document.getElementById('approvedCount').innerText = visibleTasks.length;
+            listEl.innerHTML = '';
+            
+            if (visibleTasks.length === 0) {
+                listEl.innerHTML = `
+                    <div class="text-center text-slate-400 text-xs mt-10">
+                        <i data-lucide="layers" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                        Các task được duyệt sẽ xuất hiện ở đây.
+                    </div>`;
+                lucide.createIcons();
+                return;
+            }
+            
+            const withJira = visibleTasks.filter(t => t.hasJira).reverse();
+            const withoutJira = visibleTasks.filter(t => !t.hasJira).reverse();
+
+            if (withJira.length > 0) {
+                listEl.innerHTML += `<div class="text-[10px] font-bold text-blue-500 mb-3 border-b border-slate-200 dark:border-slate-800 pb-1 mt-2 tracking-wider">ĐÃ TẠO JIRA TICKET (${withJira.length})</div>`;
+                withJira.forEach(task => {
+                    listEl.innerHTML += `
+                        <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-blue-500 relative mb-3 shadow-sm">
+                            <div class="absolute top-2.5 right-2.5 bg-blue-50 dark:bg-blue-500/10 p-1 rounded">
+                                 <i data-lucide="link" class="w-3.5 h-3.5 text-blue-500"></i>
+                            </div>
+                            <span class="text-[10px] font-mono text-slate-400 block mb-1.5">${task.id} • ${task.assignee}</span>
+                            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed pr-6">${task.action}</p>
+                            <p class="text-[10px] text-blue-600 dark:text-blue-400 font-bold mt-2">D/L: ${task.deadline}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            if (withoutJira.length > 0) {
+                listEl.innerHTML += `<div class="text-[10px] font-bold text-emerald-500 mb-3 border-b border-slate-200 dark:border-slate-800 pb-1 mt-5 tracking-wider">LƯU TRỮ NỘI BỘ (${withoutJira.length})</div>`;
+                withoutJira.forEach(task => {
+                    listEl.innerHTML += `
+                        <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800 border-l-4 border-l-emerald-500 relative mb-3 shadow-sm">
+                            <div class="absolute top-2.5 right-2.5 bg-emerald-50 dark:bg-emerald-500/10 p-1 rounded">
+                                 <i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-500"></i>
+                            </div>
+                            <span class="text-[10px] font-mono text-slate-400 block mb-1.5">${task.id} • ${task.assignee}</span>
+                            <p class="text-xs text-slate-800 dark:text-slate-200 font-medium leading-relaxed pr-6">${task.action}</p>
+                            <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-2">D/L: ${task.deadline}</p>
+                        </div>
+                    `;
+                });
+            }
+            lucide.createIcons();
+        }
+
+        // ================= KANBAN LOGIC =================
+        
+        function switchTab(tab) {
+            const triage = document.getElementById('triageView');
+            const kanban = document.getElementById('kanbanView');
+            const dash = document.getElementById('dashboardView');
+            
+            const btnTriage = document.getElementById('tabTriage');
+            const btnKanban = document.getElementById('tabKanban');
+            const btnDash = document.getElementById('tabDashboard');
+            
+            const activeClass = ['bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'shadow'];
+            const inactiveClass = ['text-slate-500', 'hover:text-slate-900', 'dark:text-slate-400', 'dark:hover:text-white', 'bg-transparent', 'shadow-none'];
+
+            // Reset buttons
+            [btnTriage, btnKanban, btnDash].forEach(btn => {
+                if(!btn) return;
+                btn.classList.remove(...activeClass);
+                btn.classList.add(...inactiveClass);
+            });
+
+            // Hide views
+            [triage, kanban, dash].forEach(v => {
+                if(!v) return;
+                v.classList.remove('opacity-100', 'pointer-events-auto');
+                v.classList.add('opacity-0', 'pointer-events-none');
+            });
+
+            // Activate target
+            if(tab === 'triage') {
+                triage.classList.remove('opacity-0', 'pointer-events-none');
+                triage.classList.add('opacity-100', 'pointer-events-auto');
+                btnTriage.classList.remove(...inactiveClass);
+                btnTriage.classList.add(...activeClass);
+            } else if(tab === 'kanban') {
+                kanban.classList.remove('opacity-0', 'pointer-events-none');
+                kanban.classList.add('opacity-100', 'pointer-events-auto');
+                btnKanban.classList.remove(...inactiveClass);
+                btnKanban.classList.add(...activeClass);
+                renderKanban();
+            } else if(tab === 'dashboard') {
+                dash.classList.remove('opacity-0', 'pointer-events-none');
+                dash.classList.add('opacity-100', 'pointer-events-auto');
+                btnDash.classList.remove(...inactiveClass);
+                btnDash.classList.add(...activeClass);
+                if (typeof updateDashboard === "function") updateDashboard();
+            }
+        }
+
+        function renderKanban() {
+            const filterEl = document.getElementById('assigneeFilter');
+            const filterText = filterEl ? filterEl.value.toLowerCase() : '';
+
+            const cols = {
+                'todo': document.getElementById('col-todo'),
+                'inprogress': document.getElementById('col-inprogress'),
+                'done': document.getElementById('col-done')
+            };
+            
+            Object.values(cols).forEach(c => { if(c) c.innerHTML = ''; });
+
+            approvedTasks.forEach(task => {
+                if(filterText && (!task.assignee || !task.assignee.toLowerCase().includes(filterText))) {
+                    return; // Skip if doesn't match filter
+                }
+
+                const status = task.kanbanStatus || 'todo';
+                const col = cols[status];
+                
+                const card = document.createElement('div');
+                card.className = "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3 shadow-sm cursor-grab active:cursor-grabbing card-hover";
+                card.draggable = true;
+                card.ondragstart = (e) => drag(e, task.id);
+                card.id = "kcard-" + task.id;
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">${task.jiraForm}</span>
+                        <span class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded font-medium">${task.display_id}</span>
+                    </div>
+                    <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 leading-snug mb-3 line-clamp-3">${task.action}</p>
+                    <div class="flex items-center justify-between mt-auto">
+                        <div class="flex items-center">
+                            <div class="w-5 h-5 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 flex items-center justify-center text-[9px] text-white font-bold ring-2 ring-white dark:ring-slate-900">
+                                ${task.assignee ? task.assignee.charAt(0).toUpperCase() : '?'}
+                            </div>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 ml-1.5 font-medium truncate w-16">${task.assignee}</span>
+                        </div>
+                    </div>
+                `;
+                if(col) col.appendChild(card);
+            });
+            if(window.lucide) lucide.createIcons();
+        }
+
+
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev, id) { ev.dataTransfer.setData("taskId", id); }
+        function drop(ev) {
+            ev.preventDefault();
+            const taskId = ev.dataTransfer.getData("taskId");
+            let targetCol = ev.target.closest('[id^="col-"]');
+            if(!targetCol) return;
+            
+            const newStatus = targetCol.id.replace('col-', '');
+            const task = approvedTasks.find(t => t.id === taskId);
+            if(task) {
+                task.kanbanStatus = newStatus;
+                saveState();
+                renderKanban();
+                if (typeof updateDashboard === 'function') updateDashboard();
+            }
+        }
+
+        // ================= LOCAL STORAGE =================
+        function saveState() { localStorage.setItem('pexApprovedTasks', JSON.stringify(approvedTasks)); }
+        function loadState() {
+            const saved = localStorage.getItem('pexApprovedTasks');
+            if(saved) {
+                try { approvedTasks = JSON.parse(saved); } catch(e) {}
+            }
+        }
+
+        window.onload = function() {
+            simulateNewMeeting();
+            // Bắt đầu auto-refresh ngầm định (dùng khi host lên web)
+            setInterval(autoRefreshData, 15000); 
+        };
+
+        function autoRefreshData() {
+            fetch(window.location.href, { cache: 'no-store' })
+                .then(res => res.text())
+                .then(html => {
+                    const startMarker = "// // === INJECT" + "_DATA_START === //";
+                    const endMarker = "// // === INJECT" + "_DATA_END === //";
+                    const startIndex = html.indexOf(startMarker);
+                    const endIndex = html.indexOf(endMarker);
+                    
+                    if (startIndex !== -1 && endIndex !== -1) {
+                        const scriptContent = html.substring(startIndex + startMarker.length, endIndex);
+                        const taskMatches = scriptContent.match(/\{"id":.*?\}/g);
+                        if (taskMatches) {
+                            try {
+                                const tempTasks = taskMatches.map(str => JSON.parse(str));
+                                if (tempTasks.length !== meetingTasks.length) {
+                                    meetingTasks = tempTasks;
+                                    const processedIds = new Set(approvedTasks.map(t => t.id));
+                                    pendingQueue = meetingTasks.filter(t => !processedIds.has(t.id));
+                                    renderPendingList();
+                                }
+                            } catch(e) { console.error("Parse auto-refresh error:", e); }
+                        }
+                    }
+                })
+                .catch(err => console.log("Auto-refresh skipped (local file or network error)"));
+        }
+    </script>
+</body>
+</html>
