@@ -342,21 +342,7 @@
 
     <script>
         // // === INJECT_DATA_START === //
-        let meetingTasks = [
-            {"id": "17_OBD_AXIT_catchup_w_c_Ngoc_1", "display_id": "1", "action": "Kiểm tra lại processing time cho 100 sản phẩm còn lại, đặc biệt là các sản phẩm đã bị gộp/xóa.", "assignee": "Vân, Emma", "deadline": "TBD", "meeting": "17_OBD", "timecode": "[00:05:21]", "jiraForm": "dev"},
-            {"id": "20_H_Weekly_PM_Meeting_7", "display_id": "7", "action": "Pull actual processing time data comparing Autumn/Winter and Spring/Summer.", "assignee": "Hien", "deadline": "TBD", "meeting": "20_H", "timecode": "[00:39:19]", "jiraForm": "dev"},
-            {"id": "20_H_Weekly_PM_Meeting_6", "display_id": "6", "action": "Request detail list of non-IVS clients requiring seasonal change.", "assignee": "Hien", "deadline": "Jul 24", "meeting": "20_H", "timecode": "[00:23:26]", "jiraForm": "TPC & PI"},
-            {"id": "21_H_Weekly_catchup_w_TPC_8", "display_id": "8", "action": "Xây dựng quy trình chính thức để cập nhật SLA.", "assignee": "PEX Team", "deadline": "TBD", "meeting": "21_H", "timecode": "[00:43:12]", "jiraForm": "DEV"}
-        ];
-        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_2", "display_id": "2", "action": "Điều tra nguyên nhân và khắc phục lỗi hệ thống retry khi timeout/upload không thành công (ECU 3)", "assignee": "Khánh", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:19:19]", "jiraForm": "dev"});
-        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_7", "display_id": "7", "action": "Chuẩn hóa quy trình tự động hóa bằng cách tạo khung checklist 5 mục bắt buộc cho tất cả các bước máy (bao gồm retry, limit input)", "assignee": "TBD", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:38:10]", "jiraForm": "qm"});
-        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_6", "display_id": "6", "action": "Xây dựng báo cáo tự động hàng tuần để tự động phát hiện và phân tích các bất thường về request/credit", "assignee": "Khánh, IT team", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:37:04]", "jiraForm": "dev"});
-        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_5", "display_id": "5", "action": "Phát triển logic để thêm tham số giới hạn số lượng file đầu vào tối đa cho mỗi mã trong các bước Vizor X", "assignee": "Khánh, IT team", "deadline": "2-4 tuần", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:36:32]", "jiraForm": "dev"});
-        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_3", "display_id": "3", "action": "Điều tra và khắc phục việc hệ thống Esoft không ghi nhận 3.000+ request từ Vizor (ECU 4)", "assignee": "Khánh, Vizor team", "deadline": "TBD", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:22:20]", "jiraForm": "dev"});
-        meetingTasks.push({"id": "23_PEX_2026_07_23_16_01_01_4", "display_id": "4", "action": "Đào tạo lại quy trình \"Select Pick\" và giới hạn số lượng ảnh đầu vào cho người dùng để tránh sao chép toàn bộ order (ECU 1 & 2)", "assignee": "Production team", "deadline": "Ngay lập tức", "meeting": "23_PEX_2026_07_23_16_01_01", "timecode": "[00:33:36]", "jiraForm": "tpc"});
-        meetingTasks.push({"id": "23_PEX_TRA_OS_Tracks_checkin_7", "display_id": "7", "action": "Đề xuất điều chỉnh deadline nếu cần [00:24:38]", "assignee": "Thịnh", "deadline": "TBD", "meeting": "23_PEX_TRA_OS_Tracks_checkin", "timecode": "[00:24:38]", "jiraForm": "dev"});
-        meetingTasks.push({"id": "23_PEX_TRA_OS_Tracks_checkin_5", "display_id": "5", "action": "Thêm một cột \"Dòng sản phẩm\" (ví dụ: MHS, Tray Channel) vào bảng [00:20:23]", "assignee": "PEX Team", "deadline": "TBD", "meeting": "23_PEX_TRA_OS_Tracks_checkin", "timecode": "[00:20:23]", "jiraForm": "dev"});
-        meetingTasks.push({"id": "23_PEX_TRA_OS_Tracks_checkin_8", "display_id": "8", "action": "Hỏi lại về khả năng copy ảnh gốc vào folder work để thuận tiện cho việc chấm bài [00:24:16]", "assignee": "Chị (người nói)", "deadline": "TBD", "meeting": "23_PEX_TRA_OS_Tracks_checkin", "timecode": "[00:24:16]", "jiraForm": "dev"});
+        let meetingTasks = [];
         // // === INJECT_DATA_END === //
         
         const jiraFormLinks = {
@@ -978,11 +964,24 @@
                     return res.json();
                 })
                 .then(tasks => {
-                    if (Array.isArray(tasks) && tasks.length !== meetingTasks.length) {
-                        meetingTasks = tasks;
-                        const processedIds = new Set(approvedTasks.map(t => t.id));
-                        pendingQueue = meetingTasks.filter(t => !processedIds.has(t.id));
-                        renderPendingList();
+                    if (Array.isArray(tasks)) {
+                        let changed = false;
+                        tasks.forEach(t => {
+                            const existing = approvedTasks.find(a => a.id === t.id);
+                            if (!existing) {
+                                // Task mới từ Github
+                                if(!t.kanbanStatus) t.kanbanStatus = 'todo';
+                                t.hasJira = true; 
+                                approvedTasks.push(t);
+                                changed = true;
+                            }
+                        });
+                        if (changed) {
+                            saveState();
+                            renderApprovedList();
+                            renderKanban();
+                            if (typeof updateDashboard === 'function') updateDashboard();
+                        }
                     }
                 })
                 .catch(err => console.log("Auto-refresh skipped or file is empty: ", err));
