@@ -969,31 +969,23 @@
         };
 
         function autoRefreshData() {
-            fetch(window.location.href, { cache: 'no-store' })
-                .then(res => res.text())
-                .then(html => {
-                    const startMarker = "// // === INJECT" + "_DATA_START === //";
-                    const endMarker = "// // === INJECT" + "_DATA_END === //";
-                    const startIndex = html.indexOf(startMarker);
-                    const endIndex = html.indexOf(endMarker);
-                    
-                    if (startIndex !== -1 && endIndex !== -1) {
-                        const scriptContent = html.substring(startIndex + startMarker.length, endIndex);
-                        const taskMatches = scriptContent.match(/\{"id":.*?\}/g);
-                        if (taskMatches) {
-                            try {
-                                const tempTasks = taskMatches.map(str => JSON.parse(str));
-                                if (tempTasks.length !== meetingTasks.length) {
-                                    meetingTasks = tempTasks;
-                                    const processedIds = new Set(approvedTasks.map(t => t.id));
-                                    pendingQueue = meetingTasks.filter(t => !processedIds.has(t.id));
-                                    renderPendingList();
-                                }
-                            } catch(e) { console.error("Parse auto-refresh error:", e); }
-                        }
+            // Tự động kéo dữ liệu từ file master_tracker.json trên Github
+            const githubUrl = 'https://raw.githubusercontent.com/hienbui610-ai/pex-tasks/main/master_tracker.json?t=' + Date.now();
+            
+            fetch(githubUrl, { cache: 'no-store' })
+                .then(res => {
+                    if (!res.ok) throw new Error("Failed to fetch Github data");
+                    return res.json();
+                })
+                .then(tasks => {
+                    if (Array.isArray(tasks) && tasks.length !== meetingTasks.length) {
+                        meetingTasks = tasks;
+                        const processedIds = new Set(approvedTasks.map(t => t.id));
+                        pendingQueue = meetingTasks.filter(t => !processedIds.has(t.id));
+                        renderPendingList();
                     }
                 })
-                .catch(err => console.log("Auto-refresh skipped (local file or network error)"));
+                .catch(err => console.log("Auto-refresh skipped or file is empty: ", err));
         }
     </script>
 </body>
