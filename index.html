@@ -246,6 +246,9 @@
                             <option value="">⏰ Lọc Deadline (All)</option>
                             <option value="TBD">TBD (Chưa chốt)</option>
                             <option value="Valid">Có Deadline cụ thể</option>
+                            <option value="next_2">Trong 2 ngày tới</option>
+                            <option value="next_3">Trong 3 ngày tới</option>
+                            <option value="next_5">Trong 5 ngày tới</option>
                         </select>
                         <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-3 text-slate-400 pointer-events-none"></i>
                     </div>
@@ -400,12 +403,35 @@
             const filterForm = document.getElementById('dashFilterForm').value;
             const filterDl = document.getElementById('dashFilterDeadline').value;
 
+            // Helper for relative date parsing
+            function parseDeadline(dlStr) {
+                if (!dlStr || dlStr.toUpperCase() === 'TBD') return null;
+                const lower = dlStr.toLowerCase();
+                const today = new Date();
+                if (lower.includes("today")) return today;
+                if (lower.includes("tomorrow")) { const d = new Date(); d.setDate(d.getDate()+1); return d; }
+                const match = dlStr.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+(\d+)/i);
+                if (match) return new Date(`${match[1]} ${match[2]} ${today.getFullYear()}`);
+                return null; // fallback
+            }
+
             // Apply filters
             const filteredTasks = approvedTasks.filter(t => {
                 if(filterAsg && t.assignee !== filterAsg) return false;
                 if(filterForm && t.jiraForm && t.jiraForm.toUpperCase() !== filterForm) return false;
-                if(filterDl === 'TBD' && t.deadline !== 'TBD') return false;
-                if(filterDl === 'Valid' && (t.deadline === 'TBD' || !t.deadline)) return false;
+                
+                if (filterDl) {
+                    if (filterDl === 'TBD' && t.deadline !== 'TBD') return false;
+                    if (filterDl === 'Valid' && (t.deadline === 'TBD' || !t.deadline)) return false;
+                    if (filterDl.startsWith('next_')) {
+                        const days = parseInt(filterDl.split('_')[1]);
+                        const dDate = parseDeadline(t.deadline);
+                        if (!dDate) return false; // cannot parse or TBD
+                        const diffTime = dDate.getTime() - new Date().getTime();
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        if (diffDays < 0 || diffDays > days) return false;
+                    }
+                }
                 return true;
             });
 
@@ -423,7 +449,6 @@
             const textColor = isDark ? '#cbd5e1' : '#475569';
             const gridColor = isDark ? '#334155' : '#f1f5f9';
 
-            // 2. Status Chart
             const statusCtx = document.getElementById('statusChart');
             if(statusChartInstance) statusChartInstance.destroy();
             statusChartInstance = new Chart(statusCtx, {
@@ -432,15 +457,38 @@
                     labels: ['To Do', 'In Progress', 'Done'],
                     datasets: [{
                         data: [todos, inprog, done],
-                        backgroundColor: ['#94a3b8', '#3b82f6', '#10b981'],
-                        borderWidth: 0,
-                        hoverOffset: 4
+                        backgroundColor: ['#94a3b8', '#818cf8', '#34d399'],
+                        hoverBackgroundColor: ['#cbd5e1', '#6366f1', '#10b981'],
+                        borderWidth: 2,
+                        borderColor: isDark ? '#0f172a' : '#ffffff',
+                        hoverOffset: 6,
+                        borderRadius: 4
                     }]
                 },
                 options: {
-                    plugins: { legend: { position: 'bottom', labels: { color: textColor, padding: 20, font: {family: 'Inter'} } } },
-                    cutout: '75%',
-                    layout: { padding: 10 }
+                    plugins: { 
+                        legend: { position: 'bottom', labels: { color: textColor, padding: 20, font: {family: 'Inter', weight: '600'} } },
+                        tooltip: {
+                            backgroundColor: isDark ? 'rgba(15, 23, 42, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+                            titleColor: isDark ? '#f1f5f9' : '#0f172a',
+                            bodyColor: isDark ? '#cbd5e1' : '#475569',
+                            borderColor: isDark ? '#334155' : '#e2e8f0',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    if (label) label += ': ';
+                                    let total = context.chart._metasets[context.datasetIndex].total;
+                                    let value = context.parsed;
+                                    let percentage = total > 0 ? Math.round(value * 100 / total) : 0;
+                                    return label + value + ' task(s) (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%',
+                    layout: { padding: {top: 10, bottom: 10, left: 10, right: 10} }
                 }
             });
 
