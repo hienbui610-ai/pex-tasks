@@ -86,5 +86,15 @@
         "meeting": "24_PEX_OBS_Testing_for_prospects",
         "timecode": "[00:41:23]",
         "jiraForm": "qm"
+    },
+    {
+        "id": "24_PEX_OBS_Testing_for_prospects_4",
+        "display_id": "4",
+        "action": "Reconnect to discuss specific variants from Esoft.",
+        "assignee": "All attendees",
+        "deadline": "5 PM (July 24, 2026)",
+        "meeting": "24_PEX_OBS_Testing_for_prospects",
+        "timecode": "[00:25:50]",
+        "jiraForm": "dev"
     }
 ]
