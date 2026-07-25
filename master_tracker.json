@@ -96,5 +96,15 @@
         "meeting": "24_PEX_OBS_Testing_for_prospects",
         "timecode": "[00:25:50]",
         "jiraForm": "dev"
+    },
+    {
+        "id": "24_PEX_OBS_Testing_for_prospects_3",
+        "display_id": "3",
+        "action": "Run small internal tests without double QC or special messages.",
+        "assignee": "TBD (Production/P&I)",
+        "deadline": "Monday (July 27, 2026)",
+        "meeting": "24_PEX_OBS_Testing_for_prospects",
+        "timecode": "[00:14:40]",
+        "jiraForm": "training"
     }
 ]
