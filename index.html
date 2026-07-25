@@ -602,6 +602,7 @@
         });
 
         function simulateNewMeeting() {
+            autoRefreshData();
             loadState();
             const processedIds = new Set(approvedTasks.map(t => t.id));
             pendingQueue = meetingTasks.filter(t => !processedIds.has(t.id));
