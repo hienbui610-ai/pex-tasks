@@ -106,5 +106,15 @@
         "meeting": "24_PEX_OBS_Testing_for_prospects",
         "timecode": "[00:14:40]",
         "jiraForm": "training"
+    },
+    {
+        "id": "24_PEX_OBS_Testing_for_prospects_2",
+        "display_id": "2",
+        "action": "Align on variant selection.",
+        "assignee": "P&I Team, PEX Team",
+        "deadline": "Within two days (by July 26, 2026)",
+        "meeting": "24_PEX_OBS_Testing_for_prospects",
+        "timecode": "[00:14:30]",
+        "jiraForm": "dev"
     }
 ]
