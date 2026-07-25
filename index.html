@@ -604,8 +604,6 @@
         function simulateNewMeeting() {
             autoRefreshData();
             loadState();
-            const processedIds = new Set(approvedTasks.map(t => t.id));
-            pendingQueue = meetingTasks.filter(t => !processedIds.has(t.id));
             
             renderPendingList();
             renderApprovedList();
@@ -1086,22 +1084,30 @@
                 })
                 .then(tasks => {
                     if (Array.isArray(tasks)) {
-                        let changed = false;
+                        let pendingChanged = false;
                         tasks.forEach(t => {
-                            const existing = approvedTasks.find(a => a.id === t.id);
-                            if (!existing) {
-                                // Task mới từ Github
-                                if(!t.kanbanStatus) t.kanbanStatus = 'todo';
-                                t.hasJira = true; 
-                                approvedTasks.push(t);
-                                changed = true;
+                            const existingApproved = approvedTasks.find(a => a.id === t.id);
+                            if (!existingApproved) {
+                                const existingPending = pendingQueue.find(p => p.id === t.id);
+                                if (!existingPending) {
+                                    pendingQueue.push(t);
+                                    pendingChanged = true;
+                                }
                             }
                         });
-                        if (changed) {
-                            saveState();
-                            renderApprovedList();
-                            renderKanban();
-                            if (typeof updateDashboard === 'function') updateDashboard();
+                        if (pendingChanged) {
+                            renderPendingList();
+                            const reviewPanel = document.getElementById('reviewPanel');
+                            if(reviewPanel && !activeTask) {
+                                reviewPanel.innerHTML = `
+                                    <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center mb-4">
+                                        <i data-lucide="inbox" class="w-8 h-8 text-indigo-500 animate-bounce"></i>
+                                    </div>
+                                    <p class="text-sm font-bold text-slate-900 dark:text-white">Inbox hiện có ${pendingQueue.length} Action Items</p>
+                                    <p class="text-xs text-slate-500 mt-2">Vui lòng chọn từng task bên trái để duyệt.</p>
+                                `;
+                                if(window.lucide) lucide.createIcons();
+                            }
                         }
                     }
                 })
