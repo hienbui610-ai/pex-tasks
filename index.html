@@ -1134,7 +1134,7 @@
                         return JSON.parse(decoded);
                     });
             } else {
-                const githubUrl = 'https://cdn.jsdelivr.net/gh/hienbui610-ai/pex-tasks@main/master_tracker.json?t=' + Date.now();
+                const githubUrl = 'https://cdn.jsdelivr.net/gh/hienbui610-ai/pex-tasks@main/master_tracker.json';
                 fetchPromise = fetch(githubUrl, { cache: 'no-store' })
                     .then(res => {
                         if (!res.ok) throw new Error("Failed to fetch Github raw data");
