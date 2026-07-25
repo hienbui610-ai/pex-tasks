@@ -646,7 +646,7 @@
         });
 
         function simulateNewMeeting() {
-            autoRefreshData();
+            autoRefreshData(true);
             loadState();
             
             renderPendingList();
@@ -1117,15 +1117,32 @@
             setInterval(autoRefreshData, 15000); 
         };
 
-        function autoRefreshData() {
-            // Tự động kéo dữ liệu từ file master_tracker.json trên Github
-            const githubUrl = 'https://raw.githubusercontent.com/hienbui610-ai/pex-tasks/main/master_tracker.json?t=' + Date.now();
+        function autoRefreshData(forceLive = false) {
+            let fetchPromise;
             
-            fetch(githubUrl, { cache: 'no-store' })
-                .then(res => {
-                    if (!res.ok) throw new Error("Failed to fetch Github data");
-                    return res.json();
-                })
+            if (forceLive) {
+                const apiUrl = 'https://api.github.com/repos/hienbui610-ai/pex-tasks/contents/master_tracker.json?t=' + Date.now();
+                fetchPromise = fetch(apiUrl, { cache: 'no-store' })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to fetch Github API data");
+                        return res.json();
+                    })
+                    .then(data => {
+                        if (!data.content) throw new Error("No content in Github API response");
+                        // Decode base64 utf-8 safely
+                        const decoded = decodeURIComponent(escape(atob(data.content)));
+                        return JSON.parse(decoded);
+                    });
+            } else {
+                const githubUrl = 'https://raw.githubusercontent.com/hienbui610-ai/pex-tasks/main/master_tracker.json?t=' + Date.now();
+                fetchPromise = fetch(githubUrl, { cache: 'no-store' })
+                    .then(res => {
+                        if (!res.ok) throw new Error("Failed to fetch Github raw data");
+                        return res.json();
+                    });
+            }
+
+            fetchPromise
                 .then(tasks => {
                     if (Array.isArray(tasks)) {
                         let pendingChanged = false;
