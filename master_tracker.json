@@ -76,5 +76,15 @@
         "meeting": "Ad-hoc Request",
         "timecode": "N/A",
         "jiraForm": "dev"
+    },
+    {
+        "id": "24_PEX_OBS_Testing_for_prospects_5",
+        "display_id": "5",
+        "action": "Review Ruby's processing time list to identify high-volume variants over 4 minutes that can be chosen.",
+        "assignee": "Long, Hien",
+        "deadline": "Before 5 PM meeting",
+        "meeting": "24_PEX_OBS_Testing_for_prospects",
+        "timecode": "[00:41:23]",
+        "jiraForm": "qm"
     }
 ]
