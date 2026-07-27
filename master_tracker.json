@@ -182,5 +182,16 @@
         "timecode": "[00:17:01]",
         "jiraForm": "tpc",
         "createdAt": "2026-07-27"
+    },
+    {
+        "id": "ACT-270726-5",
+        "display_id": "ACT-270726-5",
+        "action": "Họp với anh Phong, anh Hòa về việc request collect data tự động và lọc ảnh đánh giá AI",
+        "assignee": "TBD",
+        "deadline": "Tuần này",
+        "meeting": "27_H_Weekly_meeting_PEX",
+        "timecode": "[00:21:49]",
+        "jiraForm": "dev",
+        "createdAt": "2026-07-27"
     }
 ]
