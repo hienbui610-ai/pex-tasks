@@ -193,5 +193,16 @@
         "timecode": "[00:21:49]",
         "jiraForm": "dev",
         "createdAt": "2026-07-27"
+    },
+    {
+        "id": "ACT-270726-6",
+        "display_id": "ACT-270726-6",
+        "action": "Book họp với Anthony để chốt việc test 1 bản AI render và chi phí test",
+        "assignee": "TBD",
+        "deadline": "TBD",
+        "meeting": "27_H_Weekly_meeting_PEX",
+        "timecode": "[00:29:15]",
+        "jiraForm": "training",
+        "createdAt": "2026-07-27"
     }
 ]
