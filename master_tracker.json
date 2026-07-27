@@ -204,5 +204,16 @@
         "timecode": "[00:29:15]",
         "jiraForm": "training",
         "createdAt": "2026-07-27"
+    },
+    {
+        "id": "ACT-270726-9",
+        "display_id": "ACT-270726-9",
+        "action": "Kiểm tra và map các step đã \"audited\" vào đúng group lỗi (Format/Missing SOA)",
+        "assignee": "Duy Anh",
+        "deadline": "TBD",
+        "meeting": "27_H_Weekly_meeting_PEX",
+        "timecode": "[00:39:53]",
+        "jiraForm": "qm",
+        "createdAt": "2026-07-27"
     }
 ]
